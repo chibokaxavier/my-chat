@@ -7,8 +7,9 @@ import { ServiceContext, ServiceProvider } from "../context/service.provider";
 import { Logger } from "../services/logger.service";
 import { LogUser } from "../services/logUser.service";
 import { selectCount } from "./../store/slices/counter";
+import { AuthService } from "./../services/auth.service";
 import Layout from "./components/layout";
- import Login from "./components/login"
+ import Login from "./login"
 //  import { useAuthState } from 'react-firebase-hooks/auth';
 //  import { auth } from "../firebase";
 import { SessionProvider } from "next-auth/react"
@@ -19,7 +20,8 @@ function Wrapper({ children }: any) {
   const count = useSelector(selectCount);
   let logger = new Logger();
   let logUser = new LogUser(count);
-  let services = new ServiceProvider(logger, logUser);
+  let authService = new AuthService()
+  let services = new ServiceProvider(logger, logUser, authService);
 
   return (
     <ServiceContext.Provider value={services}>

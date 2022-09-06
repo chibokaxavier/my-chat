@@ -1,10 +1,67 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Paper from "@mui/material/Paper";
 import Input from "@mui/material/Input";
 import SearchIcon from "@mui/icons-material/Search";
+import { db } from "../../firebase";
 import IconButton from "@mui/material/IconButton";
+import { doc, onSnapshot, collection, getDocs, addDoc } from "firebase/firestore";
+import { userService } from "../../services/users.service";
+import { useRouter } from "next/router";
+import { authService } from "../../services/auth.service";
+import { getProviders, getSession, useSession } from 'next-auth/react'
+
+
 
 function Chats() {
+  const [users, setUsers] = useState([])
+  const router = useRouter()
+  // const user1 = session.user.uid
+  const { data: session } = useSession()
+
+  let hashedId=(a,b)=>{
+    return [a,b].sort().join("")
+      }
+      
+//   useEffect(() => {
+//     const user1 = session.user.uid
+//     // console.log(user1)
+//     users.map((user)=>{
+// const user2 = user.id
+// // console.log(user2)
+// let hashedId=(a,b)=>{
+//   return [a,b].sort().join("")
+//     }
+// console.log( hashedId(user1,user2))
+// })
+// // console.log( hashedId(user1,user2))
+//   }, [])
+
+  const getuser = async () => {
+    let data = await userService.getUser()
+    setUsers(data)
+    //  const querySnapshot = await getDocs(collection(db, "users"));
+    //  const data = querySnapshot.docs.map(doc => ({id:doc.id, ...doc.data()}))
+  }
+  useEffect(() => {
+    (async () => {
+      await getuser()
+    })();
+  }, [])
+
+  const redirect = (id) => {
+    router.push(`/chats/${id}`)
+  }
+
+// {users.map(user)=>{
+
+//   const addChat=async(hashedId(user1,user.id))=>{
+//     await authService.addChat(id)
+//   }
+// }}
+  // const newChat = async () => {
+  //   const input = prompt("Enter the email of the person you want to chat with")
+  //   await addDoc(collection(db, "chats", 12345),{ receiver:"johnpaul",sender:"xavier", text: input})
+  // }
   return (
     <>
       <div className=" py-2 min-h-screen ">
@@ -12,7 +69,8 @@ function Chats() {
           <div className="">
             <span className="text-[36px] font-semibold pt-[109px]">Chats</span>
             <div className="flex gap-3">
-              <span className="text-[18px]"> Recent Chats </span>
+              <span className="text-[18px]"> Recent chats  </span>
+
               <svg
                 width="10"
                 height="6"
@@ -32,7 +90,7 @@ function Chats() {
             </div>
           </div>
           <div className="pt-[10px] relative">
-            <button className=" relative  h-[60px] w-[240px] bg-blue-200 rounded-[6px] text-[20px] text-white">
+            <button onClick={() => newChat()} className=" relative  h-[60px] w-[240px] bg-blue-200 rounded-[6px] text-[20px] text-white">
               <svg
                 width="24"
                 height="24"
@@ -77,20 +135,20 @@ function Chats() {
         >
           <div className="absolute z-10 mt-3 ml-2 ">
             <IconButton aria-label="menu"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path fillRule="evenodd" clipRule="evenodd" d="M5 11C5 7.691 7.691 5 11 5C14.309 5 17 7.691 17 11C17 14.309 14.309 17 11 17C7.691 17 5 14.309 5 11ZM20.707 19.293L17.312 15.897C18.365 14.543 19 12.846 19 11C19 6.589 15.411 3 11 3C6.589 3 3 6.589 3 11C3 15.411 6.589 19 11 19C12.846 19 14.543 18.365 15.897 17.312L19.293 20.707C19.488 20.902 19.744 21 20 21C20.256 21 20.512 20.902 20.707 20.707C21.098 20.316 21.098 19.684 20.707 19.293Z" fill="#231F20"/>
-<mask id="mask0_1_325" g="mask-type:alpha" maskUnits="userSpaceOnUse" x="3" y="3" width="19" height="18">
-<path fillRule="evenodd" clipRule="evenodd" d="M5 11C5 7.691 7.691 5 11 5C14.309 5 17 7.691 17 11C17 14.309 14.309 17 11 17C7.691 17 5 14.309 5 11ZM20.707 19.293L17.312 15.897C18.365 14.543 19 12.846 19 11C19 6.589 15.411 3 11 3C6.589 3 3 6.589 3 11C3 15.411 6.589 19 11 19C12.846 19 14.543 18.365 15.897 17.312L19.293 20.707C19.488 20.902 19.744 21 20 21C20.256 21 20.512 20.902 20.707 20.707C21.098 20.316 21.098 19.684 20.707 19.293Z" fill="white"/>
-</mask>
-<g mask="url(#mask0_1_325)">
-<rect width="24" height="24" fill="#707C97"/>
-</g>
-</svg>
-</IconButton>
+              <path fillRule="evenodd" clipRule="evenodd" d="M5 11C5 7.691 7.691 5 11 5C14.309 5 17 7.691 17 11C17 14.309 14.309 17 11 17C7.691 17 5 14.309 5 11ZM20.707 19.293L17.312 15.897C18.365 14.543 19 12.846 19 11C19 6.589 15.411 3 11 3C6.589 3 3 6.589 3 11C3 15.411 6.589 19 11 19C12.846 19 14.543 18.365 15.897 17.312L19.293 20.707C19.488 20.902 19.744 21 20 21C20.256 21 20.512 20.902 20.707 20.707C21.098 20.316 21.098 19.684 20.707 19.293Z" fill="#231F20" />
+              <mask id="mask0_1_325" g="mask-type:alpha" maskUnits="userSpaceOnUse" x="3" y="3" width="19" height="18">
+                <path fillRule="evenodd" clipRule="evenodd" d="M5 11C5 7.691 7.691 5 11 5C14.309 5 17 7.691 17 11C17 14.309 14.309 17 11 17C7.691 17 5 14.309 5 11ZM20.707 19.293L17.312 15.897C18.365 14.543 19 12.846 19 11C19 6.589 15.411 3 11 3C6.589 3 3 6.589 3 11C3 15.411 6.589 19 11 19C12.846 19 14.543 18.365 15.897 17.312L19.293 20.707C19.488 20.902 19.744 21 20 21C20.256 21 20.512 20.902 20.707 20.707C21.098 20.316 21.098 19.684 20.707 19.293Z" fill="white" />
+              </mask>
+              <g mask="url(#mask0_1_325)">
+                <rect width="24" height="24" fill="#707C97" />
+              </g>
+            </svg>
+            </IconButton>
           </div>
-         <div className="absolute right-4 top-5 flex gap-3"><span className="text-[18px]">Messages 
-</span><svg className=" mt-2" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M4 6L8 10L12 6" stroke="#707C97" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-</svg></div> 
+          <div className="absolute right-4 top-5 flex gap-3"><span className="text-[18px]">Messages
+          </span><svg className=" mt-2" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 6L8 10L12 6" stroke="#707C97" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg></div>
           <Input
             className="h-full pl-[10%] font-thin rounded-lg"
             disableUnderline
@@ -100,31 +158,50 @@ function Chats() {
             id="outlined-search"
             label="Search field"
           />
-          
+
         </Paper>
 
-        <div className="p-10 rounded-[6px] bg-white w-[580px] ml-[40px] h-[220px] shadow-lg">
-          <div className="flex">
-            <img
-              src="/giannis.jfif"
-              alt=""
-              className="rounded-full h-[54px] w-[54px]"
-            />
-            <span className="text-[18px] ml-5">Chiboka Xavier</span>
-            <span className="ml-[200px] text-[16px]">1 minute ago</span>
+        {users.map(user => (
+          <div onClick={() => redirect(hashedId(user.id,session.user.uid))} key={user.id} className=" cursor-pointer p-10 rounded-[6px] bg-white w-[580px] ml-[40px] h-fit shadow-lg border-b-2">
+            <div className="flex">
+              {/* <img
+                src="/giannis.jfif"
+                alt=""
+                className="rounded-full h-[54px] w-[54px]"
+              /> */}
+              <span className="text-[18px] ml-5">{user.name}</span>
+              {/* <span className="ml-[200px] text-[16px]">2 Minutes ago</span> */}
+
+            </div>
+            {/* <div className="mt-5">
+              <span>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                Accusantium amet voluptas ad nemo accusamus, libero, ut ipsam
+                aspernatur obcaecati non voluptatem commodi veniam officiis ipsum
+                dignissimo.
+              </span>
+            </div> */}
           </div>
-          <div className="mt-5">
-            <span>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Accusantium amet voluptas ad nemo accusamus, libero, ut ipsam
-              aspernatur obcaecati non voluptatem commodi veniam officiis ipsum
-              dignissimo.
-            </span>
-          </div>
-        </div>
+
+        ))}
       </div>
     </>
   );
 }
-
+export async function getServerSideProps(context) {
+  const session = await getSession(context)
+  if (!session) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/login"
+      }
+    }
+  }
+  return {
+    props: {
+      session,
+    },
+  }
+}
 export default Chats;

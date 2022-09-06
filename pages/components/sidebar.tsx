@@ -1,10 +1,22 @@
 import React from "react";
+import { useSession } from 'next-auth/react'
+import { signOut } from "next-auth/react";
+import Link from "next/link"
+import { useCollection } from 'react-firebase-hooks/firestore';
+import { collection } from "firebase/firestore";
+import { db } from "../../firebase";
+
+
 
 function Sidebar() {
+  const { data: session } = useSession()
+  // console.log(session)
+  //  const [snapshot, loading, error] = useCollection(collection(db,"chats"));
+  //  console.log(snapshot,loading)
   return (
     <div className="pt-10 pl-5 items-center">
-      <div className="rounded-full h-[50px] w-[50px]"><img src="" />  </div>
-      <span className="font-semibold">{} </span>
+      <div className="rounded-full h-[50px] w-[50px]"><img src={session.user.image} />  </div>
+      <span className="font-semibold">{session.user.name} </span>
       <div className="pt-10">
         <div className="flex gap-7 items-center my-7">
           <div>
@@ -22,7 +34,9 @@ function Sidebar() {
           </div>
           <span className="text-lg font-semibold">HOME</span>
         </div>
-        <div className="flex gap-7 items-center my-7">
+        <Link href= "/chats"><a> helllo</a></Link>
+
+      {/* <Link href="/chats"> <a><div className="flex gap-7 items-center my-7">
           <div>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <mask id="mask0_1_67" g="mask-type:alpha" maskUnits="userSpaceOnUse" x="2" y="2" width="21" height="20">
@@ -41,8 +55,7 @@ function Sidebar() {
 
 
           </div>
-          <span className="text-lg font-semibold">CHAT</span>
-        </div>
+          <span className="text-lg font-semibold">CHAT</span></div></a></Link> */}
         <div className="flex gap-7 items-center my-7">
           <div>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -105,7 +118,7 @@ function Sidebar() {
         </div>
       </div>
 
-     {/* <div onClick={() => logout()} ><button className="p-5 hover:bg-red-600 bg-black text-white rounded-[50px]">Log Out</button></div> */} 
+      <div onClick={() => signOut()} ><button className=" h-[30px] w-[100px] hover:bg-red-600 bg-black text-white rounded-[50px]">Log Out</button></div> 
     </div>
   );
 

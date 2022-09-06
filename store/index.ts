@@ -14,3 +14,17 @@ export const store = configureStore({
 export type RootState = ReturnType<typeof store.getState>
 // Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
 export type AppDispatch = typeof store.dispatch
+
+
+// {
+//   friendslist:{
+//     xavier_id: [
+//       {
+//         name: jp,
+//         last_chat: '9pm',
+//         last_message: "oya na",
+//         email: 'jp@jp.com'
+//       }
+//     ]
+//   }
+// }
