@@ -36,7 +36,7 @@ const Home = ({ providers }) => {
         </Head>
       </div>
       <div className="">
-        <Sidebar />
+        {/* <Sidebar /> */}
       </div>
     </>
   );

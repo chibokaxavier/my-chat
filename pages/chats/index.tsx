@@ -14,28 +14,16 @@ import { getProviders, getSession, useSession } from 'next-auth/react'
 
 function Chats() {
   const [users, setUsers] = useState([])
+  const [friends, setFriends] = useState([])
   const router = useRouter()
+ 
   // const user1 = session.user.uid
   const { data: session } = useSession()
-
+ 
+   const sessionId = session?.user.uid
   let hashedId=(a,b)=>{
     return [a,b].sort().join("")
       }
-      
-//   useEffect(() => {
-//     const user1 = session.user.uid
-//     // console.log(user1)
-//     users.map((user)=>{
-// const user2 = user.id
-// // console.log(user2)
-// let hashedId=(a,b)=>{
-//   return [a,b].sort().join("")
-//     }
-// console.log( hashedId(user1,user2))
-// })
-// // console.log( hashedId(user1,user2))
-//   }, [])
-
   const getuser = async () => {
     let data = await userService.getUser()
     setUsers(data)
@@ -48,24 +36,26 @@ function Chats() {
     })();
   }, [])
 
-  const redirect = (id) => {
+  const getfriends = async (sessionId) => {
+    let data = await userService.getUserFriendslist(sessionId)
+    setFriends(data)
+    // console.log(friends)
+  }
+  useEffect(() => {
+    (async () => {
+      await getfriends(sessionId)
+    })();
+  }, [])
+
+  const redirect = async (id) => {
+    id = id.replace(/ /g,'');
     router.push(`/chats/${id}`)
   }
-
-// {users.map(user)=>{
-
-//   const addChat=async(hashedId(user1,user.id))=>{
-//     await authService.addChat(id)
-//   }
-// }}
-  // const newChat = async () => {
-  //   const input = prompt("Enter the email of the person you want to chat with")
-  //   await addDoc(collection(db, "chats", 12345),{ receiver:"johnpaul",sender:"xavier", text: input})
-  // }
   return (
     <>
-      <div className=" py-2 min-h-screen ">
-        <div className=" mr-[40px] ml-[40px] mt-[109px] flex justify-between w-[580px]">
+    <div className="flex "></div>
+    <div className=" py-2 min-h-screen ml-[200px]">
+        <div className=" mr-[40px] ml-[40px] mt-[30px] flex justify-between w-[580px]">
           <div className="">
             <span className="text-[36px] font-semibold pt-[109px]">Chats</span>
             <div className="flex gap-3">
@@ -90,7 +80,7 @@ function Chats() {
             </div>
           </div>
           <div className="pt-[10px] relative">
-            <button onClick={() => newChat()} className=" relative  h-[60px] w-[240px] bg-blue-200 rounded-[6px] text-[20px] text-white">
+            <button className=" relative  h-[60px] w-[240px] bg-blue-200 rounded-[6px] text-[20px] text-white">
               <svg
                 width="24"
                 height="24"
@@ -161,30 +151,53 @@ function Chats() {
 
         </Paper>
 
-        {users.map(user => (
-          <div onClick={() => redirect(hashedId(user.id,session.user.uid))} key={user.id} className=" cursor-pointer p-10 rounded-[6px] bg-white w-[580px] ml-[40px] h-fit shadow-lg border-b-2">
+{friends.map((friend) => {
+  // console.log(friend) 
+ return (
+ 
+ 
+          <div onClick={() => redirect(friend.id)} key={friend.id} className=" cursor-pointer p-10 rounded-[6px] bg-white w-[580px] ml-[40px] h-fit shadow-lg border-b-2">
             <div className="flex">
-              {/* <img
-                src="/giannis.jfif"
+              <img
+                src={friend.image}
                 alt=""
                 className="rounded-full h-[54px] w-[54px]"
-              /> */}
-              <span className="text-[18px] ml-5">{user.name}</span>
-              {/* <span className="ml-[200px] text-[16px]">2 Minutes ago</span> */}
-
+              /> 
+              <span className="text-[18px] ml-5 font-bold">{friend.name}</span>
             </div>
-            {/* <div className="mt-5">
-              <span>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Accusantium amet voluptas ad nemo accusamus, libero, ut ipsam
-                aspernatur obcaecati non voluptatem commodi veniam officiis ipsum
-                dignissimo.
-              </span>
-            </div> */}
+            <div className="mt-5" >  <span>{friend.Lasttext}.......</span></div>
+           
+          </div>
+        )})}
+
+        
+      </div>
+
+    <div className="mt-[30px]">
+<div>  
+<span className="font-semiBold text-[32px] ml-[45px]">ALL USERS</span>
+</div>
+{users.filter(function (userss){
+  if (userss.email===session.user.email){
+    return false;
+  }
+  return true
+}).map(user =>{ 
+  // {console.log(user)
+ return (
+          <div onClick={() => redirect(user.id)} key={user.id} className=" cursor-pointer my-5 p-4 rounded-[6px] bg-blue-200 ml-[40px] h-fit shadow-lg border-b-2">
+            <div className="flex">
+           <img
+                src={user.image}
+                alt=""
+                className="rounded-full h-[40px] w-[40px]"
+              /> 
+              <span className="text-[18px] text-black ml-5">{user.name}</span>
+            </div>
           </div>
 
-        ))}
-      </div>
+        )})} 
+    </div>
     </>
   );
 }

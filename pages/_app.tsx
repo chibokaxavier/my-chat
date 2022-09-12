@@ -39,9 +39,9 @@ function MyApp({ Component, pageProps:{ session, ...pageProps }, }: AppProps) {
     <SessionProvider session={session}>
     <Provider store={store}>
       <Wrapper>
-        {/* <Layout> */}
+         <Layout> 
           <Component {...pageProps} />
-        {/* </Layout> */}
+         </Layout> 
       </Wrapper>
     </Provider>
     </SessionProvider>
